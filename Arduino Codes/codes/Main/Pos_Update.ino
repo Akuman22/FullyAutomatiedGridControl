@@ -1,25 +1,22 @@
 void posupdate()
 {
-  if (Moveflag != 9){
-    if((millis() - timeMove)/2000>0){
-        upd = (millis() - timeMove)/2000;
-        updrem = (millis() - timeMove)%2000;
+  if ((Moveflag != 9)&&(Moveflag != 0)){
     if(Posflag == 1){
-      xPos+=upd;
+      xPos+=1;
       timeMove = millis() - updrem;
     }
     else if(Posflag == 2){
-    xPos -=upd;
+    xPos -=1;
     timeMove = millis() - updrem;
     }
     else if(Posflag == 3){
-      yPos+=upd;
+      yPos+=1;
       timeMove = millis() - updrem;
     }
     else if(Posflag == 4){
-       yPos -=upd;
+       yPos -=1;
     timeMove = millis() - updrem;
     }
   }
 }
-}
+

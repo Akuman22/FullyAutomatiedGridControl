@@ -16,5 +16,12 @@ void pathtranslate()
   {
     Moveflag = 4;
   }
+  else
+  {
+    CCflag = 1;
+    Moveflag = 0;
+    motor(m1PinRF,m1PinRB,m1PinLF,m1PinLB,0);
+
+  }
 }
 

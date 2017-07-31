@@ -19,7 +19,8 @@ RF24 radio(9,10);
 unsigned long CarName = 1;
 const uint64_t pipes[2] = { 0xF0F0F0F0E0LL, (0xF0F0F0F0E0LL+CarName) };
 int obsFront, obsSide ,dir;
-unsigned long distFront, distSide, xDestination, yDestination, xStart, yStart, rd;
+unsigned long distFront, distSide, xStart, yStart, rd;
+long int xDestination, yDestination;
 unsigned long dirCar;
 int upd, updrem, i = 0;
 unsigned long  toFront;
@@ -27,10 +28,11 @@ unsigned long  dirChange;
 unsigned long ACK = 0;
 unsigned long int  timeMain;
 unsigned long int timeMove , timeMovefunc;
-unsigned long int xPos = 0;
-unsigned long int yPos = 0;
+long int xPos = 12;
+long int yPos = 12;
 int Posflag = 1;
 int Moveflag = 0;
+int CCflag = 0;
 int flag = 0;
 
 void setup() {
@@ -62,7 +64,13 @@ void setup() {
 
 void loop() {
 
-    
+    if (CCflag == 1)
+    {
+      motor(m1PinRF,m1PinRB,m1PinLF,m1PinLB,0);
+      coordinate_call();
+      timeMove = millis();
+      CCflag = 0;
+    }
     distFront  = ultra(echoFront,trigFront);
     distSide  = ultra(echoSide,trigSide);
     obsFront = ir(irFront);
@@ -86,14 +94,17 @@ void loop() {
     else{
         motor(m1PinRF,m1PinRB,m1PinLF,m1PinLB,0);
         Moveflag = 9;
+        coordinate_call();
+        timeMove = millis();
+        
     }
-    
+    delay(100);
     if(radio.available()){
         rd = radio_recieve();
         bool timeout = false;
         delay(20);
         if(rd == (0xADD0+CarName)){
-            radio_transmit(1);
+            radio_transmit(6);
             Serial.println("Call ACK sent");
             ACK = 0;
             timeMain = millis();
@@ -113,6 +124,10 @@ void loop() {
                 Serial.print(xPos);
                 Serial.print(" ");
                 Serial.print(yPos);
+                Serial.print(" ");
+                Serial.print(xDestination);
+                Serial.print(" ");
+                Serial.print(yDestination);
                 Serial.print(" ");
                 Serial.println(Moveflag);
                 

@@ -9,9 +9,10 @@ unsigned long carNameCall, carDistFront, carDistSide, rd, STOP;
 unsigned long xStart[2],yStart[2],xDestination[2],yDestination[2];
 unsigned long ACK = 0;
 unsigned long int timeMain;
-int flag = 0;
-int i = 1;
+int flag = 0, skipFlag = 0, skipValue = 0;
+int i = 1, num = 0;
 unsigned long int dF,dS,xPos[2],yPos[2];
+
 
 
 
@@ -37,26 +38,41 @@ void setup() {
 }
 
 void loop() {
-    if(i == 1)
+  if(skipValue == 2){
+    if(skipFlag == 1){
+      Serial.print("SF");
+      Serial.print(carNameCall);
+      Serial.print("#");
+      skipFlag = 0;
+    }
+/*    if(i == 1)
     {
       i = 2; 
+      skipValue = 0;
+
     }
     else if(i == 2)
    {
      i = 1;
-    }
+     skipValue = 0;
+
+    }*/
+  }
     ACK = 0;
     timeMain = millis();
-    while((ACK==0)&&((millis() - timeMain)<5000)){
+    while((ACK==0)&&((millis() - timeMain)<3000)){
       delay(50);
       radio_transmit(0xADD0+i);
+      delay(25);
       ACK = radio_recieve();
     }
      Serial.print(i);
      Serial.print("A");
      Serial.print(String(ACK,HEX));
      Serial.print("#");
-    if(ACK == 1){
+    if(ACK == 6){
+      skipValue = 2;
+      skipFlag = 0;
       Serial.print("rACK ");
       Serial.print(i);
       Serial.print("#");
@@ -90,12 +106,59 @@ void loop() {
       Serial.print("#");
     }
     }
-    else if(ACK == 2)
+    else if(ACK == 7)
     {
+      skipValue = 2;
+      skipFlag = 0;
       Serial.print("C");
       Serial.print(i);
       Serial.print('#');
+      while(!Serial.available()){}
+      delay(30);
+      num = 0;
+      num = Serial.read();
+      xDestination[i-1] = 0;
+      while(num != '#')
+      {
+        xDestination[i-1] = xDestination[i-1]*10 + int(num) - 48;
+        delay(30);
+        num = Serial.read();
+      }
+      delay(30);
+      num = Serial.read();
+      yDestination[i-1] = 0;
+      while(num != '#')
+      {
+        yDestination[i-1] = yDestination[i-1]*10 + int(num) - 48;
+        delay(30);
+        num = Serial.read();
+      }
+      Serial.print(xDestination[i-1]);
+      Serial.print(" ");
+      Serial.print(yDestination[i-1]);
+      Serial.print("#");
       coordinate_ask();
     }
+    else
+    {
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+  /*    rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+      rd = radio_recieve();
+*/      
+      skipValue += 1;
+      skipFlag = 1;
+      }
 }
   

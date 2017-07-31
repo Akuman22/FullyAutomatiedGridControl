@@ -5,7 +5,7 @@ void radio_transmit(unsigned long c)
     radio.stopListening();
     bool ok = false;
     int i = 0;
-    while((!ok)&((millis())-tim)<1000){
+    while((!ok)&(((millis())-tim)<1000)){
       ok = radio.write(&c, sizeof(unsigned long));
       i+=1;
     }

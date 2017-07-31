@@ -1,15 +1,30 @@
  void coordinate_ask()
  {
     timeMain = millis();
-    while(((rd - carNameCall) != 0xFFF0)&&((millis()-timeMain)<4000))
+    rd = 0;
+    while(((rd - i) != 0xFFF0)&&((millis()-timeMain)<4000))
     {
       rd = radio_recieve();
-      delay(50);
+      delay(100);
       carNameCall = radio_recieve();
+      delay(100);
+      xPos[i] = radio_recieve();
+      delay(100);
+      yPos[i] = radio_recieve();
+ //     Serial.print(String((rd - i),HEX));
+ //     Serial.print("#");
+      break;
+      
     }
     Serial.print(String(rd,HEX));
+    Serial.print(" ");
+    Serial.print(xPos[i]);
+    Serial.print(" ");
+    Serial.print(yPos[i]);
+    Serial.print(" ");
+    Serial.print(carNameCall); 
     Serial.print("#");
-    if(rd - carNameCall == 0xFFF0)
+    if((rd > 0))
     {
       delay(100);
       radio_transmit(2);
@@ -25,12 +40,19 @@
      }
      if(ACK == 3)
      {
+      delay(50);
       radio_transmit(0xFFF0+carNameCall);
       radio_transmit(0xFFF0+carNameCall);
       radio_transmit(0xFFF0+carNameCall);
       radio_transmit(0xFFF0+carNameCall);
       radio_transmit(0xFFF0+carNameCall);
-      
+      Serial.print("ACK");
+      Serial.print(i);
+      Serial.print("XP");
+      Serial.print(xPos[i]);
+      Serial.print("YP");
+      Serial.print(yPos[i]);
+      Serial.print("#");
        }
       }
     }
